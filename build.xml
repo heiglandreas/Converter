@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    @__licenseText__@
+
+    This is the ant-build-file for Converter
+
+    @category   Converter
+    @package    Converter
+    @author    Andreas Heigl <a.heigl@wdv.de>
+    @since     24.03.2011
+    @copyright 2011 Andreas Heigl
+    @license   @__licenseURL__@ @__license__@
+
+-->
+<project name="Org_Heigl_Converter" default="build" basedir=".">
+    
+    <!-- 
+        First create some properties for easy handling
+    -->
+    <tstamp>
+        <format property="YEAR" pattern="yyyy"/>
+    </tstamp>
+    <buildnumber file="tools/build.number"/>
+    <property file="tools/build.number" />
+    <property name="buildDir" value="${basedir}/build" />
+    <property name="srcDir"   value="${basedir}/src" />
+    <property name="tutDir"   value="${basedir}/tutorial" />
+    <property name="docDir"   value="${basedir}/doc" />
+    <property name="testDir"  value="${basedir}/tests" />
+    <property name="distDir"  value="${basedir}/dist" />
+    <property name="zipFile"     value="${distDir}/Converter-${DSTAMP}-${build.number}.zip" />
+    <property name="licenseFile" value="${basedir}/tools/license.prepend" />
+    
+    <!-- 
+        Clean the complete structure from auto-generated files
+        
+        That includes documentation as well as build-files and other
+        dynamicaly created elements 
+     -->
+    <target name="distclean" depends="clean">
+    </target>
+    
+    <!-- 
+        Clean up the build-directory
+     -->
+    <target name="clean">
+        <delete includeemptydirs="true">
+            <fileset dir="${buildDir}" includes="**/*"/>
+            <!--fileset dir="${distDir}" includes="**/*"/-->
+        </delete>
+    </target>
+
+    <!-- 
+        Build the app.
+        
+        This will run the tests, replace the placeholders with the appropriate 
+        values, put the single files into one build-file, create a documentation
+        and minify the javascript
+    -->
+    <target name="build"
+              depends="runtests, distclean, builddoc" />
+              
+    <!-- 
+        Build the documentation
+        
+        As I have not yet found a tool this simply does nothing at all ;-)
+    -->
+    <target name="builddoc">
+        <exec executable="/usr/local/php5/bin/phpdoc" dir="${buildDir}/src/" failonerror="on">
+            <arg line=" --directory ../../${tutDir},.,${basedir}
+                        --target ${docDir}/api
+                        --quiet off
+                        --undocumentedelements on
+                        --title 'Org_Heigl_Converter'
+                        --parseprivate off
+                        --defaultpackagename 'Org_Heigl_Converter'
+                        --output HTML:frames:DOM/earthli.de.utf8
+                        --customtags pattern,todo,conf,uses,assigns,***licenseText***@,const,constant
+                        --readmeinstallchangelog INSTALL,README,CHANGELOG,LICENSE
+                        --filename INSTALL,README,CHANGELOG,LICENSE
+                        --sourcecode on
+                        --javadocdesc off" />
+
+        </exec>
+        <copy todir="${docDir}/api/images">
+            <fileset dir="${tutDir}/images/"/>
+        </copy>
+    </target>
+
+    <!--
+        Check for violations against the coding standards
+     -->
+    <target name="build.phpcs" depends="">
+        <exec executable="/usr/local/php5/bin/phpcs" dir="${srcDir}" failonerror="off" output="doc/codesniffer.xml">
+            <arg value="--standard=Zend"/>
+            <arg value="--extensions=php"/>
+            <arg value="--report=checkstyle"/>
+            <!-- these are the folders to parse -->
+            <arg value="." />
+        </exec>
+    </target>
+
+    <!-- 
+        Runs the JSUnit-Tests
+        
+        Allong the way we create some metrics that can be included into the 
+        documentation
+    -->
+    <target name="runtests">
+        <mkdir dir="${buildDir}/logs"/>
+        <mkdir dir="${buildDir}/phpunit"/>
+        <exec executable="/usr/local/php5/bin/phpunit" dir="${basedir}/tests" failonerror="on" />
+    </target>
+    
+    <!-- 
+        Create the distribution
+        
+        
+        This will take the build-file as well as the documentation and the
+        README, INSTALL and LICENSE-Files and put them into a ZIP-file after 
+        replacing the given placeholders 
+     -->
+    <target name="distribute" depends="runtests, distclean">
+        <copy filtering="true" todir="${buildDir}/src">
+            <fileset dir="${srcDir}" />
+            <filterset>
+                <filter token="__VERSION__" value="${version}"/>
+                <filter token="__BUILD__" value="${build.number}"/>
+                <filter token="__BUILDSTAMP" value="${DSTAMP}-${TSTAMP}" />
+                <filter token="__VERSION__" value="${DSTAMP}-${build.number}" />
+                <filter token="__LICENSEURL__" value="http://www.opensource.org/licenses/mit-license.php"/>
+                <filter token="__LICENSENAME__" value="MIT-License"/>
+                <filter token="__YEAR__" value="${YEAR}"/>
+                <filter token="__LICENSE__" value="Copyright (c) 2011-${YEAR} Andreas Heigl&lt;andreas@heigl.org&gt;&#13;
+* &#13;
+* Permission is hereby granted, free of charge, to any person obtaining a copy&#13;
+* of this software and associated documentation files (the 'Software'), to deal&#13;
+* in the Software without restriction, including without limitation the rights&#13;
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell&#13;
+* copies of the Software, and to permit persons to whom the Software is&#13;
+* furnished to do so, subject to the following conditions:&#13;
+* &#13;
+* The above copyright notice and this permission notice shall be included in&#13;
+* all copies or substantial portions of the Software.&#13;
+* &#13;
+* THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR&#13;
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,&#13;
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE&#13;
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER&#13;
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,&#13;
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN&#13;
+* THE SOFTWARE."/>
+            </filterset>
+        </copy>
+        <antcall target="builddoc" />
+        <zip destfile="${zipFile}">
+            <zipfileset dir="${buildDir}/src" prefix="library" />
+            <zipfileset dir="${docDir}" prefix="documentation"/>
+            <fileset dir="${basedir}" includes="CHANGELOG" />
+            <fileset dir="${basedir}" includes="LICENSE" />
+            <fileset dir="${basedir}" includes="README" />
+        </zip>
+    </target>
+</project>

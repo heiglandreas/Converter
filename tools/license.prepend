@@ -1,0 +1,20 @@
+/**
+ * @__LICENSE__@
+ * 
+ * Shorten Texts in elements with a fixed width so that the text fits into 
+ * the element.
+ * 
+ * This plugin fits a text into an element with a fixed width by either using
+ * one of the provided shorter strings or as last method by shortening the given
+ * or the shortest of the shorter strings until the string fits into the given
+ * element.
+ * 
+ * @category  jQuery.shortenText
+ * @package   jQuery.shortenText
+ * @author    Andreas Heigl<andreas@heigl.org>
+ * @copyright 2011-@__YEAR__@ Andreas Heigl
+ * @license   @__LICENSEURL__@ @__LICENSENAME__@
+ * @version   GIT: $Version$
+ * @since     24.03.2011
+ */
+ 
