@@ -1,0 +1,66 @@
+=========
+Converter
+=========
+
+Converter is a PHP library that allows easy conversion between different 
+metrics of a kind. 
+
+Conversion between meter and millimeter might be easy and can be implemented 
+over and over again, but what about the conversion from millimeter to
+nautical miles? Or what about converting latitude/longitude to UTM? Or what
+about converting degree Farenheit to Kelvin?
+
+The answer is easy: Use this Converter
+
+Requirements
+------------
+
+* PHP in version 5.3
+* Nothing else
+
+Installation
+------------
+
+* Put the Converter-Folder wherever you like and include that location into your
+  include path.
+* If you do not use an autoloader, you should do so!
+
+Usage
+-----
+Have a look at this example-code that converts from Nautical Miles to british
+yards.
+
+::
+
+  use \Converter
+  $from       = new Length\NauticalMiles();
+  $to         = new Length\BritshYard();
+  $miles2Yard = Converter::factory($from, $to);
+  
+  $yards = $converter->convert($miles);
+  
+So a once defined Converter-Object can be reused as often as you like. 
+
+How does it work
+----------------
+
+Clearly by magic. everything else would not be sophisticated enough.....
+
+For those of you that do not believe in magic, the explanation is quite simple.
+Converter uses an internal measure to and from which everything is converted.
+
+So in the previous example the Converter calls Length\NauticalMiles to convert
+the input to the internal measure and hands that over to Length\BritishYard to
+convert the internal measure to british yards.
+
+Normaly the internal measure is one of the international standard measurements
+so for lengths the internal measure is meter.
+
+For an overview have a look at the following list:
+
+:Length: meter
+:Area: squaremeter
+:Volume: cubicmeter
+:Geographical: Latitude/Longitude/Height above NN
+:Temperature: Kelvin
+:Color: CIELAB
