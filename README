@@ -36,7 +36,7 @@ Have a look at this example-code to convert from Nautical Miles to yards.
   $to         = new \Converter\Length\Yard();
   $miles2Yard = \Converter\Converter::factory($from, $to);
   
-  echo $converter->convert($miles);
+  echo $miles2Yard->convert($miles);
   // 20321.6256
   
 So a once defined Converter-Object can be reused as often as you like. 
