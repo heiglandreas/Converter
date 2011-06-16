@@ -27,17 +27,17 @@ Installation
 
 Usage
 -----
-Have a look at this example-code that converts from Nautical Miles to british
-yards.
+Have a look at this example-code to convert from Nautical Miles to yards.
 
 ::
 
-  use \Converter
-  $from       = new Length\NauticalMiles();
-  $to         = new Length\BritshYard();
-  $miles2Yard = Converter::factory($from, $to);
+  $miles      = 12;
+  $from       = new \Converter\Length\NauticalMiles();
+  $to         = new \Converter\Length\Yard();
+  $miles2Yard = \Converter\Converter::factory($from, $to);
   
-  $yards = $converter->convert($miles);
+  echo $converter->convert($miles);
+  // 20321.6256
   
 So a once defined Converter-Object can be reused as often as you like. 
 
