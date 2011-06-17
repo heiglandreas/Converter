@@ -79,7 +79,8 @@ class YardTest extends \PHPUnit_Framework_TestCase
     public function provider()
     {
         return array(
-            array(0.9144, 1.0),
+            array(1, 0.9144),
+            array(1/0.9144, 1.0),
         );
     }
 }

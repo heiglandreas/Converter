@@ -63,7 +63,7 @@ class Yard implements
      */
     public function toDefault ($value)
     {
-        return (float) $value / ( 36 * 0.0254 );
+        return (float) $value * ( 36 * 0.0254 );
     }
 
     /**
@@ -75,6 +75,6 @@ class Yard implements
      */
     public function fromDefault($value)
     {
-        return (float) $value * ( 36 * 0.0254 );
+        return (float) $value / ( 36 * 0.0254 );
     }
 }
