@@ -22,24 +22,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   ConverterTests
+ * @category   Converter
  * @package    Converter
  * @subpackage Length
  * @author     Andreas Heigl<a.heigl@wdv.de>
  * @copyright  2011 Andreas Heigl
  * @license    http://www.opensource.org/licenses/mit-license.php MIT-License
  * @version    @__VERSION__@
- * @since      16.06.2011
+ * @since      25.03.2011
  */
 
-namespace Tests\Converter\Length;
+namespace Converter\Length;
 
-use \Converter\Length\Pdfpoint;
-
+use \Converter\SubjectInterface;
+use \Converter\ObjectInterface;
 /**
- * Test correct working of the Converter-class
+ * Convert to and from PDF-Points
  *
- * @category   ConverterTests
+ * One pdf-point is the 72nd part of an inch (25.4mm)
+ *
+ * @category   Converter
  * @package    Converter
  * @subpackage Length
  * @author     Andreas Heigl<a.heigl@wdv.de>
@@ -48,45 +50,30 @@ use \Converter\Length\Pdfpoint;
  * @version    @__VERSION__@
  * @since      25.03.2011
  */
-class PdfpointTest extends \PHPUnit_Framework_TestCase
+class PointPostscript implements
+    SubjectInterface, ObjectInterface, LengthInterface
 {
-    public function testClassImplementsCorrectInterfaces()
+    /**
+     * Convert to the default value
+     *
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    public function toDefault($value)
     {
-        $interfaces = class_implements('\Converter\Length\Pdfpoint');
-        $this->assertContains('Converter\Length\LengthInterface', $interfaces);
-        $this->assertContains('Converter\TypeInterface', $interfaces);
-        $this->assertContains('Converter\SubjectInterface', $interfaces);
-        $this->assertContains('Converter\ObjectInterface', $interfaces);
+        return (float) $value / 72 * 0.0254;
     }
 
     /**
-     * @dataProvider ObjectProvider
+     * Convert from the default value
+     *
+     * @param mixed $value
+     *
+     * @return mixed
      */
-    public function testObjectFunction($input,$output){
-        $obj = new Pdfpoint();
-        $this->assertEquals($output,$obj->toDefault($input));
-    }
-
-    /**
-     * @dataProvider SubjectProvider
-     */
-    public function testSubjectFunction($input,$output)
+    public function fromDefault($value)
     {
-        $subj = new Pdfpoint();
-        $this->assertEquals($output,$subj->fromDefault($input));
-    }
-
-    public function ObjectProvider()
-    {
-        return array(
-            array(72, 0.0254),
-        );
-    }
-
-    public function SubjectProvider()
-    {
-        return array(
-            array(25.4, 72000),
-        );
+        return $value  * 72 / 0.0254;
     }
 }

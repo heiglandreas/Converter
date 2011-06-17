@@ -22,24 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
- * @category   Converter
+ * @category   ConverterTests
  * @package    Converter
  * @subpackage Length
  * @author     Andreas Heigl<a.heigl@wdv.de>
  * @copyright  2011 Andreas Heigl
  * @license    http://www.opensource.org/licenses/mit-license.php MIT-License
  * @version    @__VERSION__@
- * @since      25.03.2011
+ * @since      16.06.2011
  */
 
-namespace Converter\Length;
+namespace Tests\Converter\Length;
+
+use \Converter\Length\PointPostscript;
 
 /**
- * Convert to and from PDF-Points
+ * Test correct working of the Converter-class
  *
- * One pdf-point is the 72nd part of an inch (25.4mm)
- *
- * @category   Converter
+ * @category   ConverterTests
  * @package    Converter
  * @subpackage Length
  * @author     Andreas Heigl<a.heigl@wdv.de>
@@ -48,30 +48,45 @@ namespace Converter\Length;
  * @version    @__VERSION__@
  * @since      25.03.2011
  */
-class Pdfpoint implements
-    \Converter\SubjectInterface, \Converter\ObjectInterface, LengthInterface
+class PointPostscriptTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * Convert to the default value
-     *
-     * @param mixed $value
-     *
-     * @return mixed
-     */
-    public function toDefault($value)
+    public function testClassImplementsCorrectInterfaces()
     {
-        return (float) $value / 72 * 0.0254;
+        $interfaces = class_implements('\Converter\Length\PointPostscript');
+        $this->assertContains('Converter\Length\LengthInterface', $interfaces);
+        $this->assertContains('Converter\TypeInterface', $interfaces);
+        $this->assertContains('Converter\SubjectInterface', $interfaces);
+        $this->assertContains('Converter\ObjectInterface', $interfaces);
     }
 
     /**
-     * Convert from the default value
-     *
-     * @param mixed $value
-     *
-     * @return mixed
+     * @dataProvider ObjectProvider
      */
-    public function fromDefault($value)
+    public function testObjectFunction($input,$output){
+        $obj = new PointPostscript();
+        $this->assertEquals($output,$obj->toDefault($input));
+    }
+
+    /**
+     * @dataProvider SubjectProvider
+     */
+    public function testSubjectFunction($input,$output)
     {
-        return $value  * 72 / 0.0254;
+        $subj = new PointPostscript();
+        $this->assertEquals($output,$subj->fromDefault($input));
+    }
+
+    public function ObjectProvider()
+    {
+        return array(
+            array(72, 0.0254),
+        );
+    }
+
+    public function SubjectProvider()
+    {
+        return array(
+            array(25.4, 72000),
+        );
     }
 }
