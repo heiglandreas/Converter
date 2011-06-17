@@ -164,7 +164,7 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
          $from       = new \Converter\Length\NauticalMile();
          $to         = new \Converter\Length\Yard();
          $miles2Yard = \Converter\Converter::factory($from, $to);
-         $this->assertEquals(20321.6256,$miles2Yard->convert(12));
+         $this->assertEquals((12*1852/0.9144),$miles2Yard->convert(12));
     }
 }
 
