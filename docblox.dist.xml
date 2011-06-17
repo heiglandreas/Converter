@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<docblox>
+  <parser>
+    <target>doc/api</target>
+  </parser>
+  <transformer>
+    <target>doc/api</target>
+  </transformer>
+  <files>
+    <directory>build/src/Converter</directory>
+  </files>
+</docblox>

@@ -82,9 +82,9 @@
         
         As I have not yet found a tool this simply does nothing at all ;-)
     -->
-    <target name="builddoc">
-        <exec executable="/usr/local/php5/bin/phpdoc" dir="${srcDir}/" failonerror="on">
-            <arg line=" --directory ../../${tutDir},.,${basedir}
+    <target name="builddoc-phpdocumentor" depends="filterCode">
+        <exec executable="/usr/local/php5/bin/phpdoc" dir="${buildDir}/src/" failonerror="on">
+            <arg line=" --directory ../../${tutDir},.
                         --target ${docDir}/api
                         --quiet off
                         --undocumentedelements on
@@ -103,12 +103,23 @@
             <fileset dir="${tutDir}/images/"/>
         </copy>
     </target>
-
+    
+    <!-- 
+        Build the documentation
+    -->
+    <target name="builddoc" depends="filterCode">
+        <mkdir dir="${docDir}/api"/>
+        <exec executable="docblox" dir="${basedir}">
+            <arg value="--force" />
+            <arg value="--title" />
+            <arg value="Converter" />
+        </exec>
+    </target>
     <!--
         Check for violations against the coding standards
      -->
     <target name="build.phpcs" depends="">
-        <exec executable="/usr/local/php5/bin/phpcs" dir="${srcDir}" failonerror="off" output="doc/codesniffer.xml">
+        <exec executable="/usr/local/php5/bin/phpcs" dir="${srcDir}" failonerror="off" output="${buildDir}/codesniffer.xml">
             <arg value="--standard=Zend"/>
             <arg value="--extensions=php"/>
             <arg value="--report=checkstyle"/>
@@ -130,14 +141,14 @@
     </target>
     
     <!-- 
-        Create the distribution
-        
-        
-        This will take the build-file as well as the documentation and the
-        README, INSTALL and LICENSE-Files and put them into a ZIP-file after 
-        replacing the given placeholders 
-     -->
-    <target name="distribute" depends="distclean, runtests">
+        Create the filtered Sourcecode
+    -->
+    <target name="filterCode">
+        <mkdir dir="${buildDir}/src" />
+        <delete includeemptydirs="true">
+            <fileset dir="${buildDir}/src" includes="**/*"/>
+            <fileset dir="${docDir}/" includes="**/*"/>
+        </delete>
         <copy filtering="true" todir="${buildDir}/src">
             <fileset dir="${srcDir}" />
             <filterset>
@@ -150,7 +161,16 @@
                 <filter token="__YEAR__" value="${YEAR}"/>
             </filterset>
         </copy>
-        <antcall target="builddoc" />
+    </target>
+    <!-- 
+        Create the distribution
+        
+        
+        This will take the build-file as well as the documentation and the
+        README, INSTALL and LICENSE-Files and put them into a ZIP-file after 
+        replacing the given placeholders 
+     -->
+    <target name="distribute" depends="distclean, runtests, builddoc">
         <zip destfile="${zipFile}">
             <zipfileset dir="${buildDir}/src" prefix="library" />
             <zipfileset dir="${docDir}" prefix="documentation"/>
