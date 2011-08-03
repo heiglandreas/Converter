@@ -149,6 +149,25 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Converter\Exception\MissingSubjectException
+     */
+    public function testGettingSubjectWithWrongInterface()
+    {
+        $converter = new DummyConverter();
+        $converter->setWrongSubject();
+        $converter->getSubject();
+    }
+
+    /**
+     * @expectedException \Converter\Exception\MissingObjectException
+     */
+    public function testGettingObjectWithWrongInterface()
+    {
+        $converter = new DummyConverter();
+        $converter->setWrongObject();
+        $converter->getObject();
+    }
+    /**
      * @expectedException \Converter\Exception\ConversionSpaceMismatchException
      */
     public function testConversionOnlyWithMatchingSpaces()
@@ -186,4 +205,13 @@ class FooSubject implements \Converter\SubjectInterface,\Converter\Length\Length
 }
 class BarObject implements \Converter\ObjectInterface,\Converter\Area\AreaInterface{
     public function toDefault($value){return $value;}
+}
+
+class DummyConverter extends \Converter\Converter{
+    public function setWrongSubject(){
+        $this->_subject= new NoDummyObject();
+    }
+    public function setWrongObject(){
+        $this->_object= new NoDummySubject();
+    }
 }
