@@ -65,6 +65,21 @@ class Converter
     protected $_subject = null;
 
     /**
+     * A list of filters to be applied
+     *
+     * @var FilterCollection $filtes
+     */
+    protected $filters;
+
+    /**
+     * Converter constructor.
+     */
+    public function __construct()
+    {
+        $this->filters = new FilterCollection();
+    }
+
+    /**
      * Set the Object for the conversion
      *
      * @param \Converter\ObjectInterface $object
@@ -157,6 +172,18 @@ class Converter
     }
 
     /**
+     * Add a filter to the filter-list
+     *
+     * @param \Converter\FilterInterface $filter
+     *
+     * @return void
+     */
+    public function addFilter(FilterInterface $filter)
+    {
+        $this->filters->addFilter($filter);
+    }
+
+    /**
      * Create a Converter with an Object and a subject
      *
      * @param \Converter\ObjectInterface $object
@@ -166,12 +193,17 @@ class Converter
      */
     public static function factory(
             ObjectInterface $object,
-            SubjectInterface $subject
+            SubjectInterface $subject,
+            FilterInterface $filter = null
            )
     {
         $obj = new Converter();
         $obj->setObject($object)
-            ->setSubject($subject);
+            ->setSubject($subject)
+        ;
+        if ($filter instanceof FilterInterface) {
+            $obj->addFilter($filter);
+        }
         return $obj;
     }
 
@@ -216,8 +248,12 @@ class Converter
                 'The Object and the Subject are of different Types'
             );
         }
-        return $this->getSubject()->fromDefault(
-            $this->getObject()->toDefault($input)
-        );
+
+        // Do the actual conversion applying filters along the way
+        $defaultMeasure = $this->getObject()->toDefault($input);
+
+        $defaultMeasure = $this->filters->apply($defaultMeasure);
+
+        return $this->getSubject()->fromDefault($defaultMeasure);
     }
 }

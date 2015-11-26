@@ -34,8 +34,4 @@
  */
 ini_set ( 'date.timezone', 'Europe/Berlin' );
 
-ini_set('include_path', ini_get('include_path')
-                        . PATH_SEPARATOR . dirname(__FILE__) . '/../src'
-                        );
-
-require __DIR__ . DIRECTORY_SEPARATOR . '_autoload.php';
+require __DIR__ . '/../vendor/autoload.php';

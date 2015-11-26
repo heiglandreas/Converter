@@ -188,7 +188,7 @@ class ConverterTest extends \PHPUnit_Framework_TestCase
 }
 
 
-class NoDummySubject implements \Converter\SubjectInterface{
+class NoDummySubject implements \Converter\SubjectInterface {
     public function fromDefault($value){return $value;}
 }
 class NoDummyObject implements \Converter\ObjectInterface{
