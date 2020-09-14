@@ -2,7 +2,7 @@
     "name": "org_heigl/converter",
     "description": "Convert from and to almost anything",
     "require-dev": {
-        "phpunit/phpunit": "^4.8|^5.0",
+        "phpunit/phpunit": "^9.3.10",
         "phing/phing": "^2.12"
     },
     "license": "MIT",
